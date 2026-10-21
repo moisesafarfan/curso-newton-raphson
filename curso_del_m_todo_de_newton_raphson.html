@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="es" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curso del Método de Newton-Raphson</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f5ff',
+              100: '#e0ebff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              accent: '#8b5cf6',
+              purple: '#a855f7',
+            },
+            darkbg: '#0b0f19',
+            darkcard: '#111827',
+            darkcardhover: '#1f2937',
+            darkborder: '#1f2937',
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- MathJax Configuration & CDN for Clean LaTeX Formulas -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0f19;
+      color: #f3f4f6;
+    }
+    
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b0f19;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f2937;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #374151;
+    }
+
+    .aspect-video-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      border-radius: 1rem;
+    }
+    .aspect-video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .module-item.active {
+      background: linear-gradient(90deg, rgba(79, 70, 229, 0.25) 0%, rgba(139, 92, 246, 0.15) 100%);
+      border-left: 4px solid #6366f1;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-darkbg text-gray-100 antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- ==================== HEADER / NAVIGATION ==================== -->
+  <header class="sticky top-0 z-50 bg-darkcard/90 backdrop-blur-md border-b border-darkborder">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-accent flex items-center justify-center shadow-lg shadow-brand-500/20">
+          <i class="fa-solid fa-square-root-variable text-white text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold text-white leading-tight">Curso del Método de Newton-Raphson</h1>
+          <p class="text-xs text-indigo-400 font-medium hidden sm:block">Métodos Numéricos &amp; Análisis Matemático</p>
+        </div>
+      </div>
+      
+      <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
+        <a href="#videos" class="text-gray-300 hover:text-brand-400 transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-play text-xs text-brand-500"></i> Videos
+        </a>
+        <a href="#teoria" class="text-gray-300 hover:text-brand-400 transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-book-open text-xs text-brand-accent"></i> Teoría y Fórmulas
+        </a>
+        <a href="#paso-a-paso" class="text-gray-300 hover:text-brand-400 transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-list-ol text-xs text-purple-400"></i> Paso a Paso
+        </a>
+        <a href="#cuestionario" class="text-gray-300 hover:text-brand-400 transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-graduation-cap text-xs text-emerald-400"></i> Cuestionario
+        </a>
+        <a href="#recursos" class="text-gray-300 hover:text-brand-400 transition-colors flex items-center gap-1.5">
+          <i class="fa-solid fa-link text-xs text-cyan-400"></i> Recursos
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================== HERO BANNER ==================== -->
+  <section class="border-b border-darkborder bg-gradient-to-b from-darkbg via-slate-900/60 to-darkbg py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto text-center md:text-left md:flex md:items-center md:justify-between">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold uppercase tracking-wider mb-4">
+          <i class="fa-solid fa-atom"></i> Análisis Numérico Avanzado
+        </div>
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+          Aprende y Domina el Método de Newton-Raphson
+        </h2>
+        <p class="mt-4 text-base sm:text-lg text-gray-400 leading-relaxed">
+          Comprende la aproximación iterativa mediante la fórmula $x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$, su deducción geométrica basada en rectas tangentes, criterios de convergencia y aplicaciones prácticas en ingeniería.
+        </p>
+      </div>
+      
+      <div class="mt-6 md:mt-0 flex flex-wrap justify-center md:justify-end gap-3 shrink-0">
+        <div class="px-4 py-3 rounded-xl bg-darkcard border border-darkborder flex items-center gap-3">
+          <i class="fa-solid fa-video text-brand-500 text-xl"></i>
+          <div class="text-left">
+            <p class="text-xs text-gray-400">Lecciones</p>
+            <p class="text-sm font-bold text-white">5 Módulos en Video</p>
+          </div>
+        </div>
+        <div class="px-4 py-3 rounded-xl bg-darkcard border border-darkborder flex items-center gap-3">
+          <i class="fa-solid fa-brain text-brand-accent text-xl"></i>
+          <div class="text-left">
+            <p class="text-xs text-gray-400">Evaluación</p>
+            <p class="text-sm font-bold text-white">Quiz Interactivo</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== MAIN CONTENT: VIDEO PLAYER & PLAYLIST ==================== -->
+  <section id="videos" class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-6">
+      <h3 class="text-2xl font-bold text-white flex items-center gap-2">
+        <i class="fa-solid fa-circle-play text-brand-500"></i> Módulos de Video del Curso
+      </h3>
+      <p class="text-sm text-gray-400 mt-1">Sigue el orden pedagógico desde la intuición inicial hasta ejercicios complejos.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- LEFT: VIDEO PLAYER CONTAINER (8 Cols) -->
+      <div class="lg:col-span-8 flex flex-col space-y-6">
+        
+        <div class="bg-darkcard border border-darkborder rounded-2xl p-3 sm:p-4 shadow-2xl">
+          <div class="aspect-video-container bg-black rounded-xl">
+            <iframe id="youtube-player" 
+                    src="https://www.youtube.com/embed/NUuJU8c-hj8?enablejsapi=1" 
+                    title="Reproductor de Video" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- Player Controls & Dynamic Info -->
+          <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-darkborder pt-4">
+            <div>
+              <span id="current-module-badge" class="text-xs font-semibold text-brand-400 uppercase tracking-wider">Módulo 1 de 5</span>
+              <h3 id="current-module-title" class="text-xl font-bold text-white mt-1">
+                Introducción e Intuición — Metáfora de la duda (Agua fría/caliente)
+              </h3>
+            </div>
+            
+            <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+              <button id="btn-prev" onclick="prevModule()" class="px-4 py-2 rounded-lg bg-darkborder hover:bg-gray-700 text-white font-medium text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2">
+                <i class="fa-solid fa-chevron-left"></i> Anterior
+              </button>
+              <button id="btn-next" onclick="nextModule()" class="px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-medium text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-brand-600/30">
+                Siguiente <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description Box -->
+        <div class="bg-darkcard border border-darkborder rounded-2xl p-6 shadow-xl">
+          <h4 class="text-base font-bold text-white flex items-center gap-2 mb-2">
+            <i class="fa-solid fa-circle-info text-brand-500"></i> Descripción del Módulo Activo
+          </h4>
+          <p id="current-module-description" class="text-gray-300 leading-relaxed text-sm sm:text-base">
+            Explicación intuitiva sobre cómo el ajuste progresivo de errores nos permite converger hacia una meta fija, utilizando la analogía cotidiana de regular la temperatura del agua.
+          </p>
+          
+          <div id="math-formula-box" class="mt-4 p-4 rounded-xl bg-darkbg border border-darkborder">
+            <p class="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1">Ecuación Clave del Módulo</p>
+            <div class="text-center text-base sm:text-lg py-1 font-mono text-white">
+              $$x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$$
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: MODULE PLAYLIST SIDEBAR (4 Cols) -->
+      <div class="lg:col-span-4 flex flex-col space-y-4">
+        <div class="bg-darkcard border border-darkborder rounded-2xl p-5 shadow-xl flex flex-col h-full">
+          <div class="flex items-center justify-between pb-4 border-b border-darkborder mb-4">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-list-ul text-brand-accent"></i> Lista de Clases
+            </h3>
+            <span class="text-xs bg-darkborder px-2.5 py-1 rounded-full text-gray-400 font-mono">5 Videos</span>
+          </div>
+
+          <div class="space-y-2 overflow-y-auto max-h-[520px] pr-1" id="module-list">
+            
+            <!-- Module 1 -->
+            <button onclick="selectModule(0)" id="module-btn-0" class="module-item active w-full text-left p-3.5 rounded-xl border border-transparent hover:border-darkborder hover:bg-darkcardhover transition-all flex items-start gap-3 group">
+              <div class="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-400 font-bold flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                01
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-semibold text-brand-400 uppercase tracking-wider">Concepto Base</p>
+                <p class="text-sm font-semibold text-white truncate">Metáfora del Agua Fría / Caliente</p>
+                <p class="text-xs text-gray-400 mt-0.5 line-clamp-1">Ajuste intuitivo de errores</p>
+              </div>
+            </button>
+
+            <!-- Module 2 -->
+            <button onclick="selectModule(1)" id="module-btn-1" class="module-item w-full text-left p-3.5 rounded-xl border border-transparent hover:border-darkborder hover:bg-darkcardhover transition-all flex items-start gap-3 group">
+              <div class="w-8 h-8 rounded-lg bg-darkborder text-gray-400 font-bold flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                02
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Aplicaciones</p>
+                <p class="text-sm font-semibold text-gray-200 truncate">Newton en el Mundo Real</p>
+                <p class="text-xs text-gray-400 mt-0.5 line-clamp-1">GPS, redes eléctricas y Apolo 13</p>
+              </div>
+            </button>
+
+            <!-- Module 3 -->
+            <button onclick="selectModule(2)" id="module-btn-2" class="module-item w-full text-left p-3.5 rounded-xl border border-transparent hover:border-darkborder hover:bg-darkcardhover transition-all flex items-start gap-3 group">
+              <div class="w-8 h-8 rounded-lg bg-darkborder text-gray-400 font-bold flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                03
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Práctica Básica</p>
+                <p class="text-sm font-semibold text-gray-200 truncate">Ejercicio Práctico 1</p>
+                <p class="text-xs text-gray-400 mt-0.5 line-clamp-1">Primera aplicación paso a paso</p>
+              </div>
+            </button>
+
+            <!-- Module 4 -->
+            <button onclick="selectModule(3)" id="module-btn-3" class="module-item w-full text-left p-3.5 rounded-xl border border-transparent hover:border-darkborder hover:bg-darkcardhover transition-all flex items-start gap-3 group">
+              <div class="w-8 h-8 rounded-lg bg-darkborder text-gray-400 font-bold flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                04
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Grado 4 &amp; Simetría</p>
+                <p class="text-sm font-semibold text-gray-200 truncate">Ejercicio 2: $f(x) = x^4 - 10x^2 - 11$</p>
+                <p class="text-xs text-gray-400 mt-0.5 line-clamp-1">Raíces múltiples y Bolzano</p>
+              </div>
+            </button>
+
+            <!-- Module 5 -->
+            <button onclick="selectModule(4)" id="module-btn-4" class="module-item w-full text-left p-3.5 rounded-xl border border-transparent hover:border-darkborder hover:bg-darkcardhover transition-all flex items-start gap-3 group">
+              <div class="w-8 h-8 rounded-lg bg-darkborder text-gray-400 font-bold flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                05
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Avanzado</p>
+                <p class="text-sm font-semibold text-gray-200 truncate">Ejercicio Práctico 3</p>
+                <p class="text-xs text-gray-400 mt-0.5 line-clamp-1">Convergencia cuadrática</p>
+              </div>
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== THEORETICAL SECTION ==================== -->
+  <section id="teoria" class="border-t border-darkborder bg-darkcard/40 py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto space-y-12">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto">
+        <span class="px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold uppercase tracking-wider">
+          Fundamentos Matemáticos
+        </span>
+        <h3 class="text-3xl font-extrabold text-white mt-3">¿Qué es el Método de Newton-Raphson?</h3>
+        <p class="text-gray-400 text-sm sm:text-base mt-2 leading-relaxed">
+          Es un algoritmo abierto de análisis numérico diseñado para encontrar raíces o ceros de una función real continua $f(x) = 0$ mediante aproximaciones sucesivas con velocidad de convergencia cuadrática.
+        </p>
+      </div>
+
+      <!-- Conceptual Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Concept 1: Deducción Geométrica -->
+        <div class="bg-darkcard border border-darkborder rounded-2xl p-6 shadow-lg hover:border-brand-500/50 transition-colors">
+          <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center text-lg mb-4">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <h4 class="text-lg font-bold text-white mb-2">1. Deducción e Interpretación Geométrica</h4>
+          <p class="text-sm text-gray-300 leading-relaxed">
+            Dado un punto $(x_n, f(x_n))$ sobre la curva, la ecuación de la recta tangente a la función está dada por la fórmula punto-pendiente:
+          </p>
+          <div class="my-3 p-3 rounded-xl bg-darkbg text-center font-mono text-indigo-300 text-sm">
+            $$y - f(x_n) = f'(x_n)(x - x_n)$$
+          </div>
+          <p class="text-sm text-gray-300 leading-relaxed">
+            Buscamos la intersección de esta tangente con el eje horizontal $X$ (donde $y = 0$). Despejando la nueva coordenada $x = x_{n+1}$:
+          </p>
+          <div class="mt-3 p-3 rounded-xl bg-brand-600/20 border border-brand-500/30 text-center font-mono text-white text-base">
+            $$x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$$
+          </div>
+        </div>
+
+        <!-- Concept 2: Criterios de Parada -->
+        <div class="bg-darkcard border border-darkborder rounded-2xl p-6 shadow-lg hover:border-brand-accent/50 transition-colors">
+          <div class="w-10 h-10 rounded-xl bg-brand-accent/10 text-brand-accent flex items-center justify-center text-lg mb-4">
+            <i class="fa-solid fa-bullseye"></i>
+          </div>
+          <h4 class="text-lg font-bold text-white mb-2">2. Criterios de Parada y Tolerancia</h4>
+          <p class="text-sm text-gray-300 leading-relaxed">
+            El proceso iterativo se detiene cuando el error cometido cae por debajo de una tolerancia preestablecida $\epsilon$ (ej. $10^{-4}$ o $0.0001$). Se evalúan dos condiciones principales:
+          </p>
+          <div class="my-3 space-y-2">
+            <div class="p-3 rounded-xl bg-darkbg text-center font-mono text-purple-300 text-sm">
+              $$\text{Error Absoluto entre x: } |x_{n+1} - x_n| < \epsilon$$
+            </div>
+            <div class="p-3 rounded-xl bg-darkbg text-center font-mono text-purple-300 text-sm">
+              $$\text{Evaluación en el cero: } |f(x_n)| < \epsilon$$
+            </div>
+          </div>
+          <p class="text-xs text-gray-400 mt-2">
+            Nota: Si la derivada $f'(x_n) = 0$, la recta tangente es horizontal y el método indetermina (división por cero).
+          </p>
+        </div>
+
+        <!-- Concept 3: Selección de X0 -->
+        <div class="bg-darkcard border border-darkborder rounded-2xl p-6 shadow-lg hover:border-purple-500/50 transition-colors">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg mb-4">
+            <i class="fa-solid fa-magnifying-glass-chart"></i>
+          </div>
+          <h4 class="text-lg font-bold text-white mb-2">3. Selección de $x_0$ y Teorema de Bolzano</h4>
+          <p class="text-sm text-gray-300 leading-relaxed">
+            Para garantizar que exista al menos una raíz dentro de un intervalo $[a, b]$, aplicamos el <strong>Teorema de Bolzano</strong>: si $f(x)$ es continua y cambia de signo en el intervalo:
+          </p>
+          <div class="my-3 p-3 rounded-xl bg-darkbg text-center font-mono text-emerald-300 text-sm">
+            $$f(a) \cdot f(b) < 0$$
+          </div>
+          <p class="text-sm text-gray-300 leading-relaxed">
+            Cualquier punto dentro o cercano al intervalo $[a, b]$ sirve como condición inicial $x_0$.
+          </p>
+        </div>
+
+        <!-- Concept 4: Convergencia Cuadrática -->
+        <div class="bg-darkcard border border-darkborder rounded-2xl p-6 shadow-lg hover:border-emerald-500/50 transition-colors">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg mb-4">
+            <i class="fa-solid fa-gauge-high"></i>
+          </div>
+          <h4 class="text-lg font-bold text-white mb-2">4. Velocidad de Convergencia</h4>
+          <p class="text-sm text-gray-300 leading-relaxed">
+            A diferencia de métodos de intervalo cerrado como la bisección (de convergencia lineal y lenta), Newton-Raphson tiene <strong>convergencia cuadrática</strong>.
+          </p>
+          <p class="text-sm text-gray-300 leading-relaxed mt-2">
+            Esto significa que cerca de la raíz, el número de dígitos decimales exactos aproximadamente <strong>se duplica en cada iteración</strong>.
+          </p>
+          <div class="mt-3 p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-300">
+            <i class="fa-solid fa-check-circle mr-1"></i> Requiere típicamente entre 3 y 5 iteraciones para alta precisión.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== STEP-BY-STEP ALGORITHMIC GUIDE ==================== -->
+  <section id="paso-a-paso" class="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <span class="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold uppercase tracking-wider">
+        Procedimiento Práctico
+      </span>
+      <h3 class="text-3xl font-extrabold text-white mt-3">Guía Paso a Paso para Aplicar las Fórmulas</h3>
+      <p class="text-gray-400 text-sm sm:text-base mt-2">
+        Sigue esta secuencia algorítmica para resolver cualquier ejercicio de Newton-Raphson sin fallas.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      
+      <!-- Step 1 -->
+      <div class="bg-darkcard border border-darkborder rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
+        <div class="absolute -right-2 -top-2 w-16 h-16 bg-brand-500/10 rounded-full flex items-center justify-center font-black text-2xl text-brand-500/30">
+          01
+        </div>
+        <div>
+          <div class="w-8 h-8 rounded-lg bg-brand-600 text-white font-bold flex items-center justify-center text-xs mb-3">
+            Paso 1
+          </div>
+          <h4 class="text-base font-bold text-white mb-2">Formulación &amp; Derivada</h4>
+          <p class="text-xs text-gray-300 leading-relaxed">
+            Escribe la función en la forma $f(x) = 0$ y calcula de manera analítica la primera derivada $f'(x)$.
+          </p>
+        </div>
+        <div class="mt-4 p-2 rounded-lg bg-darkbg text-xs font-mono text-indigo-300 text-center">
+          $f(x) \implies f'(x)$
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="bg-darkcard border border-darkborder rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
+        <div class="absolute -right-2 -top-2 w-16 h-16 bg-brand-accent/10 rounded-full flex items-center justify-center font-black text-2xl text-brand-accent/30">
+          02
+        </div>
+        <div>
+          <div class="w-8 h-8 rounded-lg bg-brand-accent text-white font-bold flex items-center justify-center text-xs mb-3">
+            Paso 2
+          </div>
+          <h4 class="text-base font-bold text-white mb-2">Tabulación &amp; Semilla $x_0$</h4>
+          <p class="text-xs text-gray-300 leading-relaxed">
+            Construye una tabla de valores. Identifica los cambios de signo de $f(x)$ y elige la estimación inicial $x_0$.
+          </p>
+        </div>
+        <div class="mt-4 p-2 rounded-lg bg-darkbg text-xs font-mono text-purple-300 text-center">
+          $f(a) \cdot f(b) < 0$
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="bg-darkcard border border-darkborder rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
+        <div class="absolute -right-2 -top-2 w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center font-black text-2xl text-purple-500/30">
+          03
+        </div>
+        <div>
+          <div class="w-8 h-8 rounded-lg bg-purple-600 text-white font-bold flex items-center justify-center text-xs mb-3">
+            Paso 3
+          </div>
+          <h4 class="text-base font-bold text-white mb-2">Sustitución e Iteración</h4>
+          <p class="text-xs text-gray-300 leading-relaxed">
+            Evalúa $f(x_n)$ y $f'(x_n)$. Calcula el cociente de corrección $\frac{f(x_n)}{f'(x_n)}$ y actualiza a $x_{n+1}$.
+          </p>
+        </div>
+        <div class="mt-4 p-2 rounded-lg bg-darkbg text-xs font-mono text-emerald-300 text-center">
+          $x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="bg-darkcard border border-darkborder rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between">
+        <div class="absolute -right-2 -top-2 w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center font-black text-2xl text-emerald-500/30">
+          04
+        </div>
+        <div>
+          <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-xs mb-3">
+            Paso 4
+          </div>
+          <h4 class="text-base font-bold text-white mb-2">Verificación de Parada</h4>
+          <p class="text-xs text-gray-300 leading-relaxed">
+            Compara $|x_{n+1} - x_n|$ con la tolerancia. Si se cumple, concluye con el valor aproximado de la raíz.
+          </p>
+        </div>
+        <div class="mt-4 p-2 rounded-lg bg-darkbg text-xs font-mono text-cyan-300 text-center">
+          $|x_{n+1} - x_n| < \epsilon$
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== INTERACTIVE QUIZ SECTION ==================== -->
+  <section id="cuestionario" class="border-t border-darkborder bg-darkcard/30 py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+      
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+          Comprobación de Aprendizaje
+        </span>
+        <h3 class="text-3xl font-extrabold text-white mt-3">Cuestionario de Autoevaluación</h3>
+        <p class="text-gray-400 text-sm mt-2">
+          Responde las siguientes preguntas para validar tus conocimientos teóricos y prácticos.
+        </p>
+      </div>
+
+      <!-- Quiz Form Container -->
+      <div class="space-y-6" id="quiz-container">
+        
+        <!-- Question 1 -->
+        <div class="bg-darkcard border border-darkborder rounded-2xl p-6 shadow-md" id="q-card-0">
+          <h4 class="text-base font-bold text-white mb-1">
+            1. ¿Cuál es el requisito analítico fundamental para poder aplicar la fórmula de Newton-Raphson a $f(x)$?
+          </h4>
+          <p class="text-xs text-gray-400 mb-4">Selecciona la respuesta correcta:</p>
+          <div class="space-y-2" id="q-options-0">
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q0" value="0" class="text-brand-600 focus:ring-brand-500">
+              Que la función sea constante e igual a cero.
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q0" value="1" class="text-brand-600 focus:ring-brand-500">
+              Que la función sea continua y derivable, con $f'(x) \neq 0$ en los puntos de evaluación.
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q0" value="2" class="text-brand-600 focus:ring-brand-500">
+              Que la función no contenga potencias pares de $x$.
+            </label>
+          </div>
+          <div id="q-feedback-0" class="hidden mt-3 p-3 rounded-xl text-xs leading-relaxed"></div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="bg-darkcard border border-darkborder rounded-2xl p-6 shadow-md" id="q-card-1">
+          <h4 class="text-base font-bold text-white mb-1">
+            2. Geométricamente, ¿qué representa la corrección $-\frac{f(x_n)}{f'(x_n)}$ en cada paso?
+          </h4>
+          <p class="text-xs text-gray-400 mb-4">Selecciona la respuesta correcta:</p>
+          <div class="space-y-2" id="q-options-1">
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q1" value="0" class="text-brand-600 focus:ring-brand-500">
+              El área bajo la curva de la función en el intervalo.
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q1" value="1" class="text-brand-600 focus:ring-brand-500">
+              La distancia en el eje $X$ desde $x_n$ hasta donde la recta tangente corta al eje $X$.
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q1" value="2" class="text-brand-600 focus:ring-brand-500">
+              El valor máximo que alcanza la función.
+            </label>
+          </div>
+          <div id="q-feedback-1" class="hidden mt-3 p-3 rounded-xl text-xs leading-relaxed"></div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="bg-darkcard border border-darkborder rounded-2xl p-6 shadow-md" id="q-card-2">
+          <h4 class="text-base font-bold text-white mb-1">
+            3. Para la función $f(x) = x^4 - 10x^2 - 11$, ¿cuál es su derivada $f'(x)$?
+          </h4>
+          <p class="text-xs text-gray-400 mb-4">Selecciona la respuesta correcta:</p>
+          <div class="space-y-2" id="q-options-2">
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q2" value="0" class="text-brand-600 focus:ring-brand-500">
+              $f'(x) = 4x^3 - 20x$
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q2" value="1" class="text-brand-600 focus:ring-brand-500">
+              $f'(x) = 4x^3 - 10x - 11$
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q2" value="2" class="text-brand-600 focus:ring-brand-500">
+              $f'(x) = x^3 - 20x$
+            </label>
+          </div>
+          <div id="q-feedback-2" class="hidden mt-3 p-3 rounded-xl text-xs leading-relaxed"></div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="bg-darkcard border border-darkborder rounded-2xl p-6 shadow-md" id="q-card-3">
+          <h4 class="text-base font-bold text-white mb-1">
+            4. ¿Qué sucede si la estimación $x_n$ cae en un punto donde $f'(x_n) = 0$?
+          </h4>
+          <p class="text-xs text-gray-400 mb-4">Selecciona la respuesta correcta:</p>
+          <div class="space-y-2" id="q-options-3">
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q3" value="0" class="text-brand-600 focus:ring-brand-500">
+              El método se vuelve instantáneamente el doble de rápido.
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q3" value="1" class="text-brand-600 focus:ring-brand-500">
+              Se produce una división por cero (tangente horizontal) y el algoritmo se interrumpe.
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-darkbg border border-darkborder hover:border-gray-600 cursor-pointer text-sm text-gray-300 transition-colors">
+              <input type="radio" name="q3" value="2" class="text-brand-600 focus:ring-brand-500">
+              Se obtiene la raíz exacta sin hacer más cálculos.
+            </label>
+          </div>
+          <div id="q-feedback-3" class="hidden mt-3 p-3 rounded-xl text-xs leading-relaxed"></div>
+        </div>
+
+      </div>
+
+      <!-- Submit Button & Score Display -->
+      <div class="mt-8 flex flex-col items-center justify-center space-y-4">
+        <button onclick="evaluateQuiz()" class="px-8 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-brand-accent hover:from-brand-500 hover:to-purple-500 text-white font-bold text-base shadow-xl shadow-brand-600/20 transition-all flex items-center gap-2">
+          <i class="fa-solid fa-check-double"></i> Evaluar Mis Respuestas
+        </button>
+
+        <div id="quiz-score-box" class="hidden w-full p-6 rounded-2xl bg-darkcard border border-darkborder text-center shadow-xl">
+          <h4 id="score-title" class="text-xl font-extrabold text-white mb-2"></h4>
+          <p id="score-text" class="text-sm text-gray-300"></p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== EXTERNAL SUPPORT RESOURCES ==================== -->
+  <section id="recursos" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
+        Herramientas &amp; Enlaces
+      </span>
+      <h3 class="text-3xl font-extrabold text-white mt-3">Recursos de Apoyo y Material Externo</h3>
+      <p class="text-gray-400 text-sm mt-2">
+        Aprovecha estas plataformas interactivas, calculadoras y documentación para profundizar.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      
+      <!-- Resource 1 -->
+      <a href="https://www.geogebra.org/m/J33K3EzA" target="_blank" rel="noopener noreferrer" class="group bg-darkcard border border-darkborder hover:border-brand-500 rounded-2xl p-5 transition-all flex flex-col justify-between hover:shadow-lg hover:shadow-brand-500/10">
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-chart-area"></i>
+          </div>
+          <h4 class="text-base font-bold text-white group-hover:text-brand-400 transition-colors">GeoGebra Interactivo</h4>
+          <p class="text-xs text-gray-400 mt-2 leading-relaxed">
+            Visualizador dinámico para arrastrar el valor $x_0$, trazar las rectas tangentes y ver la convergencia paso a paso.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-darkborder flex items-center text-xs font-semibold text-brand-400 group-hover:translate-x-1 transition-transform">
+          Abrir Applet <i class="fa-solid fa-arrow-up-right-from-square ml-1.5"></i>
+        </div>
+      </a>
+
+      <!-- Resource 2 -->
+      <a href="https://www.wolframalpha.com/input?i=newton+method+x%5E4-10x%5E2-11" target="_blank" rel="noopener noreferrer" class="group bg-darkcard border border-darkborder hover:border-orange-500 rounded-2xl p-5 transition-all flex flex-col justify-between hover:shadow-lg hover:shadow-orange-500/10">
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-calculator"></i>
+          </div>
+          <h4 class="text-base font-bold text-white group-hover:text-orange-400 transition-colors">WolframAlpha Solver</h4>
+          <p class="text-xs text-gray-400 mt-2 leading-relaxed">
+            Verifica tablas de iteración, derivadas y raíces exactas de cualquier función simbólica en milisegundos.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-darkborder flex items-center text-xs font-semibold text-orange-400 group-hover:translate-x-1 transition-transform">
+          Consultar Wolfram <i class="fa-solid fa-arrow-up-right-from-square ml-1.5"></i>
+        </div>
+      </a>
+
+      <!-- Resource 3 -->
+      <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.newton.html" target="_blank" rel="noopener noreferrer" class="group bg-darkcard border border-darkborder hover:border-emerald-500 rounded-2xl p-5 transition-all flex flex-col justify-between hover:shadow-lg hover:shadow-emerald-500/10">
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition-transform">
+            <i class="fa-brands fa-python"></i>
+          </div>
+          <h4 class="text-base font-bold text-white group-hover:text-emerald-400 transition-colors">Python SciPy Optimize</h4>
+          <p class="text-xs text-gray-400 mt-2 leading-relaxed">
+            Documentación de la función `scipy.optimize.newton` para implementar el algoritmo en proyectos reales de código.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-darkborder flex items-center text-xs font-semibold text-emerald-400 group-hover:translate-x-1 transition-transform">
+          Ver Código SciPy <i class="fa-solid fa-arrow-up-right-from-square ml-1.5"></i>
+        </div>
+      </a>
+
+      <!-- Resource 4 -->
+      <a href="https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/pages/unit-2-applications-of-differentiation/part-b-optimization-related-rates-and-newtons-method/session-34-newtons-method/" target="_blank" rel="noopener noreferrer" class="group bg-darkcard border border-darkborder hover:border-purple-500 rounded-2xl p-5 transition-all flex flex-col justify-between hover:shadow-lg hover:shadow-purple-500/10">
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition-transform">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <h4 class="text-base font-bold text-white group-hover:text-purple-400 transition-colors">MIT OCW Guía de Cálculo</h4>
+          <p class="text-xs text-gray-400 mt-2 leading-relaxed">
+            Material de lectura universitario del MIT OpenCourseWare con pruebas rigurosas de análisis de error.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-darkborder flex items-center text-xs font-semibold text-purple-400 group-hover:translate-x-1 transition-transform">
+          Ver Lección MIT <i class="fa-solid fa-arrow-up-right-from-square ml-1.5"></i>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="border-t border-darkborder bg-darkcard py-8 px-4 sm:px-6 lg:px-8 text-center text-xs text-gray-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>Curso del Método de Newton-Raphson • Optimizado para publicar en GitHub Pages</p>
+      <p class="flex items-center gap-2">
+        <span>Diseñado para Métodos Numéricos</span>
+        <span>•</span>
+        <i class="fa-solid fa-code text-brand-500"></i>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    // Module Data
+    const modules = [
+      {
+        id: "NUuJU8c-hj8",
+        badge: "Módulo 1 de 5",
+        title: "Introducción e Intuición — Metáfora de la duda (Agua fría/caliente)",
+        description: "Explicación intuitiva sobre cómo el ajuste progresivo de errores nos permite converger hacia una meta fija, utilizando la analogía cotidiana de regular la temperatura del agua.",
+        formula: "$$x_{n+1} = x_n - \\frac{f(x_n)}{f'(x_n)}$$"
+      },
+      {
+        id: "2YivX7vjIK0",
+        badge: "Módulo 2 de 5",
+        title: "Newton-Raphson en el Mundo Real",
+        description: "Casos de uso reales e industriales en redes de potencia eléctrica, sistemas de navegación GPS, motores de simulación 3D y la épica historia de rescate de la misión Apolo 13 de la NASA.",
+        formula: "$$\\text{Flujo de potencia: } f(x) = 0 \\implies x_{n+1} = x_n - \\frac{f(x_n)}{f'(x_n)}$$"
+      },
+      {
+        id: "TYN8S19epLU",
+        badge: "Módulo 3 de 5",
+        title: "Ejercicio Práctico 1: Primera Aplicación Paso a Paso",
+        description: "Resolución guiada desde cero: planteamiento de la función, cálculo de la derivada analítica y ejecución de la tabla de iteraciones hasta detenerse en la tolerancia requerida.",
+        formula: "$$f(x) = 0 \\implies f'(x) = \\frac{d}{dx}f(x)$$"
+      },
+      {
+        id: "-I-GGdm23Nk",
+        badge: "Módulo 4 de 5",
+        title: "Ejercicio Práctico 2: Función Polinómica $f(x) = x^4 - 10x^2 - 11$",
+        description: "Análisis de una función polinómica de cuarto grado. Uso de la tabla de valores para aplicar el Teorema de Bolzano en la detección de raíces múltiples y aprovechamiento de la simetría par.",
+        formula: "$$f(x) = x^4 - 10x^2 - 11 \\implies f'(x) = 4x^3 - 20x$$"
+      },
+      {
+        id: "Yu0GNLRq_sk",
+        badge: "Módulo 5 de 5",
+        title: "Ejercicio Práctico 3: Convergencia Avanzada y Retos",
+        description: "Estudio detallado de la velocidad de convergencia cuadrática, casos especiales de indisposición por derivadas cercanas a cero y buenas prácticas en la elección de la semilla $x_0$.",
+        formula: "$$\\text{Tolerancia: } |x_{n+1} - x_n| < \\epsilon$$"
+      }
+    ];
+
+    let currentModuleIndex = 0;
+
+    // Select module & update video player
+    function selectModule(index) {
+      if (index < 0 || index >= modules.length) return;
+      
+      currentModuleIndex = index;
+      const mod = modules[currentModuleIndex];
+
+      const player = document.getElementById('youtube-player');
+      player.src = `https://www.youtube.com/embed/${mod.id}?enablejsapi=1&autoplay=1`;
+
+      document.getElementById('current-module-badge').innerText = mod.badge;
+      document.getElementById('current-module-title').innerHTML = mod.title;
+      document.getElementById('current-module-description').innerHTML = mod.description;
+      
+      const formulaBox = document.getElementById('math-formula-box');
+      formulaBox.innerHTML = `
+        <p class="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1">Ecuación Clave del Módulo</p>
+        <div class="text-center text-base sm:text-lg py-1 font-mono text-white">
+          ${mod.formula}
+        </div>
+      `;
+
+      // Trigger MathJax re-render for LaTeX formulas
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([
+          document.getElementById('current-module-title'),
+          document.getElementById('current-module-description'),
+          formulaBox
+        ]);
+      }
+
+      // Update sidebar styles
+      for (let i = 0; i < modules.length; i++) {
+        const btn = document.getElementById(`module-btn-${i}`);
+        const numBox = btn.querySelector('div');
+        const titleText = btn.querySelectorAll('p')[1];
+
+        if (i === currentModuleIndex) {
+          btn.classList.add('active');
+          btn.classList.remove('border-transparent');
+          numBox.className = "w-8 h-8 rounded-lg bg-brand-500/20 text-brand-400 font-bold flex items-center justify-center shrink-0 mt-0.5 text-xs";
+          titleText.className = "text-sm font-semibold text-white truncate";
+        } else {
+          btn.classList.remove('active');
+          btn.classList.add('border-transparent');
+          numBox.className = "w-8 h-8 rounded-lg bg-darkborder text-gray-400 font-bold flex items-center justify-center shrink-0 mt-0.5 text-xs";
+          titleText.className = "text-sm font-semibold text-gray-200 truncate";
+        }
+      }
+
+      document.getElementById('btn-prev').disabled = (currentModuleIndex === 0);
+      document.getElementById('btn-next').disabled = (currentModuleIndex === modules.length - 1);
+    }
+
+    function prevModule() {
+      if (currentModuleIndex > 0) selectModule(currentModuleIndex - 1);
+    }
+
+    function nextModule() {
+      if (currentModuleIndex < modules.length - 1) selectModule(currentModuleIndex + 1);
+    }
+
+    // Quiz Questions Data & Verification
+    const quizData = [
+      {
+        correct: 1,
+        explanation: "Correcto. El método requiere evaluar $f'(x_n)$ en el denominador. Si $f'(x)$ no existe o es cero, el método falla."
+      },
+      {
+        correct: 1,
+        explanation: "Correcto. La relación $\\frac{f(x_n)}{f'(x_n)}$ proviene del corte de la recta tangente con el eje horizontal X."
+      },
+      {
+        correct: 0,
+        explanation: "Correcto. Derivando término a término $x^4 - 10x^2 - 11$, obtenemos $4x^3 - 20x$."
+      },
+      {
+        correct: 1,
+        explanation: "Correcto. Geométricamente la tangente es paralela al eje X, lo que causa una división por cero indeterminada."
+      }
+    ];
+
+    function evaluateQuiz() {
+      let score = 0;
+      
+      quizData.forEach((q, idx) => {
+        const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+        const feedbackEl = document.getElementById(`q-feedback-${idx}`);
+        feedbackEl.classList.remove('hidden', 'bg-emerald-950/50', 'border-emerald-500/40', 'text-emerald-300', 'bg-rose-950/50', 'border-rose-500/40', 'text-rose-300');
+        feedbackEl.classList.add('border');
+
+        if (selected && parseInt(selected.value) === q.correct) {
+          score++;
+          feedbackEl.classList.add('bg-emerald-950/50', 'border-emerald-500/40', 'text-emerald-300');
+          feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> ${q.explanation}`;
+        } else {
+          feedbackEl.classList.add('bg-rose-950/50', 'border-rose-500/40', 'text-rose-300');
+          feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> Incorrecto. La respuesta adecuada es la opción que destaca la continuidad, derivada no nula y recta tangente.`;
+        }
+      });
+
+      // Display overall score inside UI
+      const scoreBox = document.getElementById('quiz-score-box');
+      const scoreTitle = document.getElementById('score-title');
+      const scoreText = document.getElementById('score-text');
+
+      scoreBox.classList.remove('hidden');
+      const percentage = (score / quizData.length) * 100;
+
+      if (percentage === 100) {
+        scoreTitle.className = "text-xl font-extrabold text-emerald-400 mb-2";
+        scoreTitle.innerHTML = `<i class="fa-solid fa-trophy mr-2"></i> ¡Puntaje Perfecto! ${score}/${quizData.length} (100%)`;
+        scoreText.innerText = "Has demostrado un dominio excelente de la teoría y la práctica del Método de Newton-Raphson.";
+      } else if (percentage >= 50) {
+        scoreTitle.className = "text-xl font-extrabold text-brand-400 mb-2";
+        scoreTitle.innerHTML = `<i class="fa-solid fa-award mr-2"></i> ¡Buen Trabajo! ${score}/${quizData.length} (${percentage}%)`;
+        scoreText.innerText = "Tienes una base sólida. Revisa la sección teórica y los videos para afianzar todos los conceptos.";
+      } else {
+        scoreTitle.className = "text-xl font-extrabold text-amber-400 mb-2";
+        scoreTitle.innerHTML = `<i class="fa-solid fa-book-open mr-2"></i> Puntaje: ${score}/${quizData.length} (${percentage}%)`;
+        scoreText.innerText = "Te recomendamos repasar los módulos de video y la sección de fórmulas antes de intentar nuevamente.";
+      }
+
+      // Re-render MathJax in feedback if needed
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([scoreBox]);
+      }
+    }
+
+    // Initialize Page
+    window.addEventListener('DOMContentLoaded', () => {
+      selectModule(0);
+    });
+  </script>
+</body>
+</html>
