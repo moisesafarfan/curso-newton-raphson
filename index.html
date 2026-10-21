@@ -40,7 +40,6 @@
       svg: { fontCache: 'global' }
     };
   </script>
-
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
@@ -72,14 +71,14 @@
         </div>
         <div>
           <h1 class="font-bold text-lg leading-tight text-white">Método de Newton-Raphson</h1>
-          <p class="text-xs text-slate-400">Por: Moisés Abinadí Farfan González (9941-25-86)</p>
+          <p class="text-xs text-slate-400">Proyecto Final</p>
         </div>
       </div>
 
       <nav class="hidden md:flex space-x-6 text-sm font-medium">
-        <a href="#registro" class="hover:text-brand-500 transition-colors">Registro</a>
+        <a href="#presentacion" class="hover:text-brand-500 transition-colors">Presentación</a>
         <a href="#modulo-videos" class="hover:text-brand-500 transition-colors">Clases en Video</a>
-        <a href="#teoria" class="hover:text-brand-500 transition-colors">Fundamento Teórico</a>
+        <a href="#teoria" class="hover:text-brand-500 transition-colors">Teoría</a>
         <a href="#pasos" class="hover:text-brand-500 transition-colors">Algoritmo</a>
         <a href="#cuestionario" class="hover:text-brand-500 transition-colors">Evaluación</a>
       </nav>
@@ -101,7 +100,7 @@
         Curso del Método de <span class="bg-gradient-to-r from-brand-500 to-indigo-400 bg-clip-text text-transparent">Newton-Raphson</span>
       </h2>
       <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-        Plataforma interactiva con lecciones en video, teoría de convergencia cuadrática, guía algorítmica y autoevaluación.
+        Plataforma educativa interactiva con lecciones en video, teoría de convergencia cuadrática, guía algorítmica y autoevaluación.
       </p>
     </div>
   </section>
@@ -109,73 +108,24 @@
   <!-- MAIN CONTENT CONTAINER -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow space-y-16">
 
-    <!-- SECCIÓN DE PRESENTACIÓN OBLIGATORIA DEL ESTUDIANTE -->
-    <section id="registro" class="scroll-mt-20 bg-slate-900/90 border border-brand-500/40 rounded-2xl p-6 sm:p-8 shadow-xl space-y-4">
-      <div class="flex items-center space-x-3 border-b border-slate-800 pb-4">
-        <div class="bg-brand-600 text-white p-2.5 rounded-xl shadow-lg shadow-brand-600/30">
-          <i class="fa-solid fa-id-card text-xl"></i>
-        </div>
-        <div>
-          <span class="text-brand-400 text-xs font-bold uppercase tracking-widest">Paso Obligatorio Inicial</span>
-          <h3 class="text-xl font-bold text-white">Registro de Participación del Estudiante</h3>
-        </div>
-      </div>
-      
-      <p class="text-slate-300 text-sm leading-relaxed">
-        Cada estudiante debe iniciar su participación identificándose en este módulo. Ingresa tu nombre completo, carnet y el tema de tu proyecto final:
-      </p>
-
-      <form id="form-presentacion" onsubmit="guardarPresentacion(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-        <div>
-          <label for="nombre-estudiante" class="block text-xs font-semibold text-slate-300 mb-1">Nombre Completo *</label>
-          <input 
-            type="text" 
-            id="nombre-estudiante" 
-            required 
-            placeholder="Ej: Moisés Abinadí Farfan González" 
-            class="w-full bg-slate-950 border border-slate-700 focus:border-brand-500 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition"
-          />
+    <!-- SECCIÓN DE PRESENTACIÓN FIJA DEL ESTUDIANTE / AUTOR -->
+    <section id="presentacion" class="scroll-mt-20 bg-slate-900/90 border border-brand-500/40 rounded-2xl p-6 sm:p-8 shadow-xl">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div class="flex items-center space-x-4">
+          <div class="bg-brand-600/20 border border-brand-500/40 text-brand-400 p-4 rounded-2xl">
+            <i class="fa-solid fa-user-graduate text-3xl"></i>
+          </div>
+          <div>
+            <span class="text-brand-400 text-xs font-bold uppercase tracking-widest">Presentación del Curso</span>
+            <h3 class="text-2xl font-bold text-white mt-1">Moisés Abinadí Farfan González</h3>
+            <p class="text-slate-400 text-sm mt-0.5">Carnet: <span class="text-slate-200 font-mono font-semibold">9941-25-86</span></p>
+          </div>
         </div>
 
-        <div>
-          <label for="carnet-estudiante" class="block text-xs font-semibold text-slate-300 mb-1">Carnet / Carné *</label>
-          <input 
-            type="text" 
-            id="carnet-estudiante" 
-            required 
-            placeholder="Ej: 9941-25-86" 
-            class="w-full bg-slate-950 border border-slate-700 focus:border-brand-500 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition"
-          />
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs space-y-1 w-full sm:w-auto">
+          <p class="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">Proyecto Final</p>
+          <p class="text-white font-medium text-sm">Curso Interactivo del Método de Newton-Raphson</p>
         </div>
-
-        <div>
-          <label for="tema-proyecto" class="block text-xs font-semibold text-slate-300 mb-1">Tema del Proyecto Final *</label>
-          <input 
-            type="text" 
-            id="tema-proyecto" 
-            required 
-            placeholder="Ej: Análisis de convergencia en redes de potencia" 
-            class="w-full bg-slate-950 border border-slate-700 focus:border-brand-500 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none transition"
-          />
-        </div>
-
-        <div class="sm:col-span-3 flex justify-end">
-          <button 
-            type="submit" 
-            class="bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs px-6 py-3 rounded-xl transition shadow-lg shadow-brand-600/30 flex items-center gap-2">
-            <i class="fa-solid fa-paper-plane"></i>
-            <span>Guardar y Confirmar Registro</span>
-          </button>
-        </div>
-      </form>
-
-      <!-- CONFIRMACIÓN DE REGISTRO -->
-      <div id="confirmacion-presentacion" class="hidden bg-emerald-950/60 border border-emerald-500/40 rounded-xl p-4 text-emerald-300 text-sm space-y-1">
-        <p class="font-bold flex items-center gap-2">
-          <i class="fa-solid fa-circle-check text-emerald-400"></i>
-          ¡Registro Confirmado Exitosamente!
-        </p>
-        <p id="datos-registrados" class="text-xs text-emerald-200/90 leading-relaxed"></p>
       </div>
     </section>
 
@@ -389,7 +339,7 @@
 
   </main>
 
-  <!-- FOOTER PERSONALIZADO -->
+  <!-- FOOTER -->
   <footer class="border-t border-slate-800 bg-slate-900/80 py-8 px-4 text-center text-xs text-slate-400 space-y-2">
     <p class="font-semibold text-slate-200">
       Curso del Método de Newton-Raphson — Presentado por <span class="text-brand-400">Moisés Abinadí Farfan González</span> (Carnet: <span class="text-brand-400">9941-25-86</span>)
@@ -399,28 +349,6 @@
 
   <!-- LÓGICA JAVASCRIPT -->
   <script>
-    // REGISTRO DE PRESENTACIÓN
-    function guardarPresentacion(e) {
-      e.preventDefault();
-      const nombre = document.getElementById('nombre-estudiante').value;
-      const carnet = document.getElementById('carnet-estudiante').value;
-      const tema = document.getElementById('tema-proyecto').value;
-      
-      localStorage.setItem('estudiante_nombre', nombre);
-      localStorage.setItem('estudiante_carnet', carnet);
-      localStorage.setItem('estudiante_tema', tema);
-
-      mostrarConfirmacion(nombre, carnet, tema);
-    }
-
-    function mostrarConfirmacion(nombre, carnet, tema) {
-      const box = document.getElementById('confirmacion-presentacion');
-      const datos = document.getElementById('datos-registrados');
-      
-      datos.innerHTML = `<strong>Estudiante:</strong> ${nombre} &nbsp;|&nbsp; <strong>Carnet:</strong> ${carnet} &nbsp;|&nbsp; <strong>Proyecto:</strong> ${tema}`;
-      box.classList.remove('hidden');
-    }
-
     // DATOS DE MÓDULOS DE VIDEO
     const modules = [
       {
@@ -664,18 +592,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       renderModules();
       renderQuiz();
-
-      // Cargar datos previos si existen
-      const nombreGuardado = localStorage.getItem('estudiante_nombre');
-      const carnetGuardado = localStorage.getItem('estudiante_carnet');
-      const temaGuardado = localStorage.getItem('estudiante_tema');
-
-      if (nombreGuardado && carnetGuardado && temaGuardado) {
-        document.getElementById('nombre-estudiante').value = nombreGuardado;
-        document.getElementById('carnet-estudiante').value = carnetGuardado;
-        document.getElementById('tema-proyecto').value = temaGuardado;
-        mostrarConfirmacion(nombreGuardado, carnetGuardado, temaGuardado);
-      }
     });
   </script>
 
